@@ -1,0 +1,171 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.vnylplayer"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Strict Background Playback Permissions -->
+12    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+12-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:6:5-75
+12-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:6:22-72
+13    <uses-permission
+13-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:7:5-107
+14        android:name="android.permission.READ_EXTERNAL_STORAGE"
+14-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:7:22-77
+15        android:maxSdkVersion="32" />
+15-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:7:78-104
+16    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+16-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:8:5-77
+16-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:8:22-74
+17    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+17-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:9:5-92
+17-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:9:22-89
+18    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+18-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:10:5-77
+18-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:10:22-74
+19    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+19-->[androidx.media3:media3-common:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\62bff791f1134549d85662891e5bf2fa\workspace\transformed\media3-common-1.3.1\AndroidManifest.xml:22:5-79
+19-->[androidx.media3:media3-common:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\62bff791f1134549d85662891e5bf2fa\workspace\transformed\media3-common-1.3.1\AndroidManifest.xml:22:22-76
+20
+21    <permission
+21-->[androidx.core:core:1.12.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\b2a2b1cd411f63a855ffff66d4332d27\workspace\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
+22        android:name="com.example.vnylplayer.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+22-->[androidx.core:core:1.12.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\b2a2b1cd411f63a855ffff66d4332d27\workspace\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
+23        android:protectionLevel="signature" />
+23-->[androidx.core:core:1.12.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\b2a2b1cd411f63a855ffff66d4332d27\workspace\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
+24
+25    <uses-permission android:name="com.example.vnylplayer.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+25-->[androidx.core:core:1.12.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\b2a2b1cd411f63a855ffff66d4332d27\workspace\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
+25-->[androidx.core:core:1.12.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\b2a2b1cd411f63a855ffff66d4332d27\workspace\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
+26
+27    <application
+27-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:12:5-40:19
+28        android:allowBackup="true"
+28-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:13:9-35
+29        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+29-->[androidx.core:core:1.12.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\b2a2b1cd411f63a855ffff66d4332d27\workspace\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
+30        android:debuggable="true"
+31        android:extractNativeLibs="false"
+32        android:label="Vnyl Player"
+32-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:14:9-36
+33        android:supportsRtl="true"
+33-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:15:9-35
+34        android:testOnly="true"
+35        android:theme="@android:style/Theme.DeviceDefault.NoActionBar" >
+35-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:16:9-71
+36        <activity
+36-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:18:9-28:20
+37            android:name="com.example.vnylplayer.MainActivity"
+37-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:19:13-41
+38            android:exported="true" >
+38-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:20:13-36
+39            <intent-filter>
+39-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:22:13-26:29
+40                <action android:name="android.intent.action.MAIN" />
+40-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:23:17-69
+40-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:23:25-66
+41
+42                <category android:name="android.intent.category.LAUNCHER" />
+42-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:25:17-77
+42-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:25:27-74
+43            </intent-filter>
+44        </activity>
+45
+46        <!-- Media3 Audio Playback Isolated Service -->
+47        <service
+47-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:31:9-38:19
+48            android:name="com.example.vnylplayer.player.VnylPlaybackService"
+48-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:32:13-55
+49            android:exported="true"
+49-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:34:13-36
+50            android:foregroundServiceType="mediaPlayback" >
+50-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:33:13-58
+51            <intent-filter>
+51-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:35:13-37:29
+52                <action android:name="androidx.media3.session.MediaSessionService" />
+52-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:36:17-86
+52-->D:\apps\vnyl-player\Vnyl-player\app\src\main\AndroidManifest.xml:36:25-83
+53            </intent-filter>
+54        </service>
+55
+56        <provider
+56-->[androidx.emoji2:emoji2:1.3.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\37ae535caf162f080b7fd4177a6c0a95\workspace\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+57            android:name="androidx.startup.InitializationProvider"
+57-->[androidx.emoji2:emoji2:1.3.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\37ae535caf162f080b7fd4177a6c0a95\workspace\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+58            android:authorities="com.example.vnylplayer.androidx-startup"
+58-->[androidx.emoji2:emoji2:1.3.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\37ae535caf162f080b7fd4177a6c0a95\workspace\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+59            android:exported="false" >
+59-->[androidx.emoji2:emoji2:1.3.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\37ae535caf162f080b7fd4177a6c0a95\workspace\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+60            <meta-data
+60-->[androidx.emoji2:emoji2:1.3.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\37ae535caf162f080b7fd4177a6c0a95\workspace\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+61                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+61-->[androidx.emoji2:emoji2:1.3.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\37ae535caf162f080b7fd4177a6c0a95\workspace\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+62                android:value="androidx.startup" />
+62-->[androidx.emoji2:emoji2:1.3.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\37ae535caf162f080b7fd4177a6c0a95\workspace\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+63            <meta-data
+63-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\d5c33f946276231ec678d567c54d52f8\workspace\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+64                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+64-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\d5c33f946276231ec678d567c54d52f8\workspace\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+65                android:value="androidx.startup" />
+65-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\acer\.gradle\caches\9.3.0\transforms\d5c33f946276231ec678d567c54d52f8\workspace\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+66            <meta-data
+66-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+67                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+67-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+68                android:value="androidx.startup" />
+68-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+69        </provider>
+70
+71        <service
+71-->[androidx.room:room-runtime:2.6.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\04e2eae100c4b39766746632d72f2fd1\workspace\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+72            android:name="androidx.room.MultiInstanceInvalidationService"
+72-->[androidx.room:room-runtime:2.6.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\04e2eae100c4b39766746632d72f2fd1\workspace\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+73            android:directBootAware="true"
+73-->[androidx.room:room-runtime:2.6.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\04e2eae100c4b39766746632d72f2fd1\workspace\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+74            android:exported="false" />
+74-->[androidx.room:room-runtime:2.6.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\04e2eae100c4b39766746632d72f2fd1\workspace\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+75
+76        <receiver
+76-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+77            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+77-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+78            android:directBootAware="false"
+78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+79            android:enabled="true"
+79-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+80            android:exported="true"
+80-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+81            android:permission="android.permission.DUMP" >
+81-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+82            <intent-filter>
+82-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+83                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+83-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+83-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+84            </intent-filter>
+85            <intent-filter>
+85-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+86                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+86-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+86-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+87            </intent-filter>
+88            <intent-filter>
+88-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+89                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+90            </intent-filter>
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+92                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\acer\.gradle\caches\9.3.0\transforms\d279f2cfd17fe25710cb48a230dd1037\workspace\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+93            </intent-filter>
+94        </receiver>
+95    </application>
+96
+97</manifest>
