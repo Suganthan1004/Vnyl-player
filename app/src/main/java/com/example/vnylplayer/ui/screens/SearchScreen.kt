@@ -21,7 +21,7 @@ fun SearchScreen() {
             .background(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF151815),
+                        Color(0xFF050505),
                         MaterialTheme.colorScheme.background
                     ),
                     radius = 2000f

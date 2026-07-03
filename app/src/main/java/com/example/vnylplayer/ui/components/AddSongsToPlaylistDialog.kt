@@ -7,10 +7,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -32,6 +38,12 @@ fun AddSongsToPlaylistDialog(
         .getAvailableSongsForPlaylist(playlistId, allSongs)
         .collectAsState(initial = emptyList())
 
+    val targetPlaylist by playlistViewModel
+        .getPlaylistById(playlistId)
+        .collectAsState(initial = null)
+
+    val selectedSongs = remember { mutableStateListOf<Song>() } // Native Multi-Select tracking array bounds
+
     fun formatMs(ms: Long): String {
         val totalSeconds = ms / 1000
         val m = totalSeconds / 60
@@ -50,7 +62,7 @@ fun AddSongsToPlaylistDialog(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF1B181C).copy(alpha = 0.98f),
+                            Color(0xFF050505).copy(alpha = 0.98f),
                             Color(0xFF2C0B12).copy(alpha = 0.8f) // Subtle burgundy drop-off
                         )
                     )
@@ -79,27 +91,6 @@ fun AddSongsToPlaylistDialog(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(
-                            onClick = onDismiss,
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text("CANCEL", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
-                        }
-
-                        Button(
-                            onClick = onDismiss,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            elevation = null,
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text("DONE", style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -116,23 +107,63 @@ fun AddSongsToPlaylistDialog(
                 } else {
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 16.dp)
+                            .fillMaxWidth()
+                            .weight(1f) // Binds layout strictly up letting bottom bar nest dynamically natively!
                     ) {
                         items(availableSongs, key = { it.id }) { song ->
+                            val isSelected = selectedSongs.contains(song)
                             SongRow(
                                 title = song.title,
                                 artist = song.artist,
                                 duration = formatMs(song.durationMs),
                                 artworkUri = song.artworkUri,
                                 showAddButton = true, // EXPLICITLY SET TRUE IN SELECTION MODE ONLY
-                                onClick = {}, // No playback in this mode
+                                isSelected = isSelected, // Pushes UI state checks dynamically directly down natively
+                                onClick = {}, // No playback in this mode natively
                                 onAddClick = {
-                                    // Instantly triggers Room Insertion -> Re-evaluates getAvailableSongsForPlaylist -> Song vanishes gracefully!
-                                    playlistViewModel.addSongToPlaylist(playlistId, song.id)
+                                    // Toggles selection checkmark natively bounding batches
+                                    if (isSelected) {
+                                        selectedSongs.remove(song)
+                                    } else {
+                                        selectedSongs.add(song)
+                                    }
                                 }
                             )
                         }
+                    }
+                }
+
+                // BOTTOM ACTION BAR OVERRIDE LOOP
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFF000000).copy(alpha = 0.98f)) // Absolute Obsidian bounding baseline natively isolating
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("CANCEL", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
+                    }
+
+                    Button(
+                        onClick = {
+                            selectedSongs.forEach { batchSong ->
+                                playlistViewModel.addSongToPlaylist(playlistId, batchSong.id)
+                            }
+                            onDismiss() // Close the UI cleanly when batch inserts flawlessly execute natively
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedSongs.isNotEmpty()) Color(0xFF8B0000).copy(alpha = 0.9f) else Color(0xFF0A0A0A)
+                        ),
+                        enabled = selectedSongs.isNotEmpty(),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = if (selectedSongs.isNotEmpty()) "ADD SELECTED (${selectedSongs.size})" else "ADD SELECTED",
+                            color = if (selectedSongs.isNotEmpty()) Color.White else MaterialTheme.colorScheme.onBackground.copy(alpha=0.5f),
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
             }

@@ -69,6 +69,23 @@ fun ProfileScreen(
                                 MediaMetadataRetriever.METADATA_KEY_DURATION
                             )?.toLongOrNull() ?: 1L
 
+                        // SECURE EMBEDDED MP3 ALBUM ART EXTRACTION 
+                        // Bypasses unreliable MediaStore heuristics entirely extracting pure physical metadata directly from bytes!
+                        var finalArtworkUri: String? = null
+                        val rawArtworkBytes = retriever.embeddedPicture
+                        if (rawArtworkBytes != null) {
+                            val coversDir = java.io.File(context.filesDir, "extracted_covers")
+                            if (!coversDir.exists()) coversDir.mkdirs()
+                            
+                            val artworkHash = rawArtworkBytes.contentHashCode()
+                            // Safe file system mappings using standard hashing averting duplication
+                            val persistentArtworkFile = java.io.File(coversDir, "cover_$artworkHash.png")
+                            if (!persistentArtworkFile.exists()) {
+                                persistentArtworkFile.writeBytes(rawArtworkBytes)
+                            }
+                            finalArtworkUri = android.net.Uri.fromFile(persistentArtworkFile).toString()
+                        }
+
                         retriever.release()
 
                         Song(
@@ -76,7 +93,8 @@ fun ProfileScreen(
                             title = title,
                             artist = artist,
                             durationMs = duration,
-                            uri = uri.toString()
+                            uri = uri.toString(),
+                            artworkUri = finalArtworkUri // Physically injected bypassing null values natively
                         )
 
                     }.getOrNull()
@@ -95,7 +113,7 @@ fun ProfileScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF131114), 
+                        Color(0xFF050505), 
                         MaterialTheme.colorScheme.background 
                     )
                 )
@@ -148,7 +166,7 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(24.dp))
                         .clickable { audioPicker.launch(arrayOf("audio/*")) }, // Launch media picker
-                    color = Color(0xFF16161A)
+                    color = Color(0xFF050505)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -167,7 +185,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(24.dp))
-                        .background(Color(0xFF16161A))
+                        .background(Color(0xFF050505))
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {

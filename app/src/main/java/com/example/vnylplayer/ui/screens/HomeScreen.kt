@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import com.example.vnylplayer.player.SharedPlayerViewModel
 import com.example.vnylplayer.player.PlaylistViewModel
 import com.example.vnylplayer.data.Song
@@ -35,11 +37,13 @@ fun HomeScreen(
     playlistViewModel: PlaylistViewModel,
     onPlaylistClick: (Long) -> Unit = {},
     onSeeAllSongsClick: () -> Unit = {},
-    onArtistClick: (String) -> Unit = {}
+    onArtistClick: (String) -> Unit = {},
+    onNavigateToPlayer: () -> Unit = {}
 ) {
     val recentlyPlayed by playerViewModel.recentlyPlayed.collectAsState()
     val artists by playerViewModel.artists.collectAsState()
     val playlists by playlistViewModel.allPlaylists.collectAsState()
+    val allLibrarySongs by playerViewModel.songs.collectAsState() // Elevated globally solving scope leakage natively!
     var songToAdd by remember { mutableStateOf<Song?>(null) }
     
     fun formatMs(ms: Long): String {
@@ -55,8 +59,8 @@ fun HomeScreen(
             .background(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF131114), // Muted dark atmospheric core
-                        MaterialTheme.colorScheme.background // obsidian edge
+                        Color(0xFF050505), // Void black atmospheric core
+                        MaterialTheme.colorScheme.background // True pitch edge
                     ),
                     radius = 1800f
                 )
@@ -92,7 +96,6 @@ fun HomeScreen(
                     AlbumCard(title = "Night Drive", artist = "Retro Syntax", null, onClick = { onPlaylistClick(1L) })
                     AlbumCard(title = "Lunar Phase", artist = "OLED Heights", null, onClick = { onPlaylistClick(2L) })
                 } else {
-                    val allLibrarySongs by playerViewModel.songs.collectAsState()
                     playlists.forEach { playlist ->
                         HomePlaylistCard(
                             playlistId = playlist.playlistId,
@@ -121,8 +124,15 @@ fun HomeScreen(
                             duration = formatMs(song.durationMs),
                             artworkUri = song.artworkUri,
                             showAddButton = false, // Clean UI rendering purely for play sequences on Home
-                            onClick = { playerViewModel.playQueue(recentlyPlayed, recentlyPlayed.indexOf(song)) },
-                            onAddClick = { songToAdd = song }
+                            onClick = { 
+                                if (playerViewModel.currentSong.value?.id == song.id) {
+                                    onNavigateToPlayer()
+                                } else {
+                                    playerViewModel.playQueue(recentlyPlayed, recentlyPlayed.indexOf(song)) 
+                                }
+                            },
+                            onAddClick = { songToAdd = song },
+                            onAddToQueueClick = { playerViewModel.addToQueue(song) }
                         )
                     }
                 }
@@ -141,11 +151,13 @@ fun HomeScreen(
             ) {
                 val topArtists = artists.take(5)
                 if (topArtists.isEmpty()) {
-                    ArtistCard("Retro Syntax", onClick = { onArtistClick("Retro Syntax") })
-                    ArtistCard("Cinematic Audio", onClick = { onArtistClick("Cinematic Audio") })
+                    ArtistCard("Retro Syntax", null, onClick = { onArtistClick("Retro Syntax") })
+                    ArtistCard("Cinematic Audio", null, onClick = { onArtistClick("Cinematic Audio") })
                 } else {
                     topArtists.forEach { artistName ->
-                        ArtistCard(name = artistName, onClick = { onArtistClick(artistName) })
+                        // Query the first track structurally containing valid imagery bridging them visually onto the category
+                        val artistArtwork = allLibrarySongs.firstOrNull { it.artist == artistName && it.artworkUri != null }?.artworkUri
+                        ArtistCard(name = artistName, artworkUri = artistArtwork, onClick = { onArtistClick(artistName) })
                     }
                 }
             }
@@ -231,7 +243,8 @@ private fun HomePlaylistCard(playlistId: Long, title: String, playlistViewModel:
         com.example.vnylplayer.ui.components.CdArtwork(
             size = 140.dp,
             isPlaying = false,
-            artworkUri = null
+            artworkUri = null,
+            isPlaylist = true
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground, maxLines = 1)
@@ -240,28 +253,41 @@ private fun HomePlaylistCard(playlistId: Long, title: String, playlistViewModel:
 }
 
 @Composable
-private fun ArtistCard(name: String, onClick: () -> Unit) {
+private fun ArtistCard(name: String, artworkUri: String?, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = Modifier.clickable(onClick = onClick).width(120.dp)
     ) {
-        // Artist portrait placeholder
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFF222226), Color(0xFF131316))
+        if (artworkUri != null) {
+            AsyncImage(
+                model = android.net.Uri.parse(artworkUri),
+                contentDescription = "Artist Image for $name",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, Color(0x0AFFFFFF), CircleShape)
+            )
+        } else {
+            // Cinematic fallback gradient explicitly bound for metadata-less Artists natively
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(Color(0xFF0A0A0A), Color(0xFF050505))
+                        )
                     )
-                )
-                .border(1.dp, Color(0x0AFFFFFF), CircleShape)
-        )
+                    .border(1.dp, Color(0x0AFFFFFF), CircleShape)
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = name,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 1 // Limit overflow intrinsically
         )
     }
 }

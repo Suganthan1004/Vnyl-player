@@ -8,6 +8,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.vnylplayer.data.Song
@@ -50,6 +51,17 @@ class SharedPlayerViewModel(application: Application) : AndroidViewModel(applica
     
     private val _progress = MutableStateFlow(0L)
     val progress: StateFlow<Long> = _progress.asStateFlow()
+
+    // Shuffle Matrix Tracking isolating queue interactions safely over Media3
+    private val _isShuffleEnabled = MutableStateFlow(false)
+    val isShuffleEnabled: StateFlow<Boolean> = _isShuffleEnabled.asStateFlow()
+    
+    // Explicit Dynamic Queue Visibility rendering ExoPlayer bounds visually organically 
+    private val _currentQueue = MutableStateFlow<List<Song>>(emptyList())
+    val currentQueue: StateFlow<List<Song>> = _currentQueue.asStateFlow()
+
+    private val _currentQueueIndex = MutableStateFlow(0)
+    val currentQueueIndex: StateFlow<Int> = _currentQueueIndex.asStateFlow()
 
     init {
         initializeController()
@@ -109,6 +121,9 @@ class SharedPlayerViewModel(application: Application) : AndroidViewModel(applica
                 
                 // Safely reconnect UI tracking bridging the gap from background service persistence
                 _isPlaying.value = player?.isPlaying == true
+                _isShuffleEnabled.value = player?.shuffleModeEnabled ?: false
+                refreshQueueState()
+                
                 player?.currentMediaItem?.mediaMetadata?.let { meta ->
                     _currentSong.value = Song(
                         id = player?.currentMediaItem?.mediaId ?: "",
@@ -129,6 +144,11 @@ class SharedPlayerViewModel(application: Application) : AndroidViewModel(applica
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 _isPlaying.value = isPlaying
             }
+            
+            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+                super.onTimelineChanged(timeline, reason)
+                refreshQueueState()
+            }
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
@@ -145,8 +165,62 @@ class SharedPlayerViewModel(application: Application) : AndroidViewModel(applica
                 } ?: run {
                     _currentSong.value = null
                 }
+                
+                // Track explicitly against dynamic Timeline sequences structurally binding Queue tracking natively!
+                refreshQueueState() 
+            }
+
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+                _isShuffleEnabled.value = shuffleModeEnabled
+                refreshQueueState() // Re-scrambles visual arrays instantly natively syncing algorithms
             }
         })
+    }
+    
+    // Parses raw ExoPlayer timeline limits translating actual algorithmic bounds securely ignoring static iterators!
+    private fun refreshQueueState() {
+        val p = player ?: return
+        val timeline = p.currentTimeline
+        if (timeline.isEmpty) {
+            _currentQueue.value = emptyList()
+            return
+        }
+
+        val tempQueue = mutableListOf<Song>()
+        val baseLibrary = _songs.value
+        var logicalActiveQueueIndex = 0
+        var loopCount = 0
+
+        // Always trace iteration from Media3 dynamically depending on toggle state natively
+        val shuffleMode = p.shuffleModeEnabled
+        var currentIndex = timeline.getFirstWindowIndex(shuffleMode)
+
+        while (currentIndex != C.INDEX_UNSET) {
+            val item = p.getMediaItemAt(currentIndex)
+            val originalSrc = baseLibrary.find { it.id == item.mediaId }
+
+            if (currentIndex == p.currentMediaItemIndex) {
+                logicalActiveQueueIndex = loopCount
+            }
+
+            tempQueue.add(
+                Song(
+                    id = item.mediaId,
+                    title = item.mediaMetadata.title?.toString() ?: "Unknown Track",
+                    artist = item.mediaMetadata.artist?.toString() ?: "Unknown Artist",
+                    durationMs = originalSrc?.durationMs ?: 0L,
+                    uri = item.mediaId,
+                    artworkUri = item.mediaMetadata.artworkUri?.toString()
+                )
+            )
+
+            loopCount++
+            currentIndex = timeline.getNextWindowIndex(currentIndex, Player.REPEAT_MODE_OFF, shuffleMode)
+        }
+
+        _currentQueue.value = tempQueue
+        _currentQueueIndex.value = logicalActiveQueueIndex
     }
     
     // Safely translates a local library array block into the ExoPlayer internal queue system natively
@@ -181,12 +255,49 @@ class SharedPlayerViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    // High-performance asynchronous queue injection safely bypassing playback interruptions organically!
+    fun addToQueue(song: Song) {
+        val executionLayer = {
+            val mediaItem = MediaItem.Builder()
+                .setMediaId(song.uri)
+                .setUri(song.uri)
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(song.title)
+                        .setArtist(song.artist)
+                        .setArtworkUri(if (song.artworkUri != null) android.net.Uri.parse(song.artworkUri) else null)
+                        .build()
+                )
+                .build()
+            player?.addMediaItem(mediaItem) // Push to end natively!
+
+            // Reactively spark playback if queue was dead
+            if (player?.playbackState == Player.STATE_IDLE) {
+                player?.prepare()
+                player?.play()
+            }
+        }
+
+        if (player != null) {
+            executionLayer()
+        } else {
+            controllerFuture?.addListener({ executionLayer() }, MoreExecutors.directExecutor())
+        }
+    }
+
     fun togglePlayPause() {
         if (player?.isPlaying == true) {
             player?.pause()
         } else {
             player?.play()
         }
+    }
+
+    // Deep Media3 Shuffle Engine implicitly securing isolated subset queues flawlessly natively
+    fun toggleShuffle() {
+        val nextMode = !(_isShuffleEnabled.value)
+        _isShuffleEnabled.value = nextMode
+        player?.shuffleModeEnabled = nextMode
     }
 
     fun skipToNext() {

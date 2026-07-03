@@ -31,24 +31,37 @@ import com.example.vnylplayer.player.SharedPlayerViewModel
 import com.example.vnylplayer.ui.navigation.Route
 import com.example.vnylplayer.ui.navigation.VnylNavGraph
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun MainScaffold(playerViewModel: SharedPlayerViewModel) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val isMainScreen = currentRoute == Route.Home.route // Unified route for Pager bounds
     val isPlayerScreen = currentRoute == Route.Player.route
     val isProfileScreen = currentRoute == Route.Profile.route
 
+    val pagerState = rememberPagerState(pageCount = { 2 }) // Host spatial memory inherently
+    val coroutineScope = rememberCoroutineScope()
+
     val isPlaying by playerViewModel.isPlaying.collectAsState()
     val currentSong by playerViewModel.currentSong.collectAsState()
+    val progress by playerViewModel.progress.collectAsState()
+    
+    val safeDuration = (currentSong?.durationMs ?: 1L).coerceAtLeast(1L)
+    val progressRatio = (progress.toFloat() / safeDuration.toFloat()).coerceIn(0f, 1f)
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Main Routing Canvas (Rendered First -> Bottom layer Z=0)
         VnylNavGraph(
             navController = navController,
             playerViewModel = playerViewModel,
+            pagerState = pagerState, // Push spatial tracking gracefully into route node natively
             modifier = Modifier.fillMaxSize()
         )
 
@@ -71,8 +84,14 @@ fun MainScaffold(playerViewModel: SharedPlayerViewModel) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    NavHeaderItem("HOME", currentRoute == Route.Home.route) { navController.navigate(Route.Home.route) }
-                    NavHeaderItem("LIBRARY", currentRoute == Route.Library.route) { navController.navigate(Route.Library.route) }
+                    NavHeaderItem("HOME", isMainScreen && pagerState.currentPage == 0) {
+                        if (!isMainScreen) navController.navigate(Route.Home.route)
+                        coroutineScope.launch { pagerState.animateScrollToPage(0) }
+                    }
+                    NavHeaderItem("LIBRARY", isMainScreen && pagerState.currentPage == 1) {
+                        if (!isMainScreen) navController.navigate(Route.Home.route)
+                        coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                    }
                 }
 
                 // RIGHT: Settings Route Action
@@ -109,7 +128,10 @@ fun MainScaffold(playerViewModel: SharedPlayerViewModel) {
                     artist = activeMetadata.artist,
                     artworkUri = activeMetadata.artworkUri,
                     isPlaying = isPlaying,
+                    progressRatio = progressRatio,
                     onPlayPauseClick = { playerViewModel.togglePlayPause() },
+                    onPreviousClick = { playerViewModel.skipToPrevious() },
+                    onNextClick = { playerViewModel.skipToNext() },
                     onPlayerClick = { 
                         if (currentRoute != Route.Player.route) {
                             navController.navigate(Route.Player.route) { 

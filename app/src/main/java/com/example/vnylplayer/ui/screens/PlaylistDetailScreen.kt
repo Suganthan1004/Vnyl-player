@@ -23,6 +23,11 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.foundation.border
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
 import com.example.vnylplayer.player.PlaylistViewModel
 import com.example.vnylplayer.player.SharedPlayerViewModel
 import com.example.vnylplayer.ui.components.SongRow
@@ -32,7 +37,8 @@ import com.example.vnylplayer.ui.components.AddSongsToPlaylistDialog
 fun PlaylistDetailScreen(
     playlistId: Long,
     playerViewModel: SharedPlayerViewModel,
-    playlistViewModel: PlaylistViewModel
+    playlistViewModel: PlaylistViewModel,
+    onNavigateToPlayer: () -> Unit = {}
 ) {
 
     val playlistSongsIds by playlistViewModel
@@ -69,7 +75,7 @@ fun PlaylistDetailScreen(
             .background(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF131518),
+                        Color(0xFF050505),
                         MaterialTheme.colorScheme.background
                     ),
                     radius = 2000f
@@ -93,14 +99,64 @@ fun PlaylistDetailScreen(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = "${activeSongs.size} Tracks",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${activeSongs.size} Tracks",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-            Spacer(modifier = Modifier.height(32.dp))
+                if (activeSongs.isNotEmpty()) {
+                    val isRunningThisPlaylist = playerViewModel.currentSong.collectAsState().value?.let { activeSongs.contains(it) } == true
+                    
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(24.dp))
+                            .clickable { playerViewModel.playQueue(activeSongs, 0) }
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = if (isRunningThisPlaylist) listOf(
+                                        Color(0xCCFF0033), // Brighter crimson while active playing
+                                        Color(0x99550011)
+                                    ) else listOf(
+                                        Color(0x88990011), // Deep obsidian glassmorphic crimson
+                                        Color(0x44440008)
+                                    )
+                                )
+                            )
+                            .border(
+                                1.dp,
+                                if (isRunningThisPlaylist) Color(0x44FF6666) else Color(0x22FF3333),
+                                RoundedCornerShape(24.dp)
+                            )
+                            .padding(horizontal = 24.dp, vertical = 10.dp)
+                    ) {
+                        if (isRunningThisPlaylist) {
+                            Text(
+                                text = "PLAYING",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFFFFEEEE),
+                                letterSpacing = 2.sp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Play Playlist",
+                                tint = Color(0xFFFFEEEE)
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             if (activeSongs.isEmpty()) {
 
@@ -136,14 +192,19 @@ fun PlaylistDetailScreen(
                             duration = formatMs(song.durationMs),
                             artworkUri = song.artworkUri,
                             showAddButton = false,
-                            showRemoveButton = true, // Exposes the subtle closure natively for active tracks
-                            onRemoveClick = { playlistViewModel.removeSongFromPlaylist(playlistId, song.id) }, // Gracefully targets relations explicitly leaving audio safe
+                            showOverflowMenu = true, // Enables contextual 3-dot dropdown natively instead of abrupt destructive X hooks!
+                            onRemoveClick = { playlistViewModel.removeSongFromPlaylist(playlistId, song.id) }, // Passed dynamically into Context MenuItem
                             onClick = {
-                                playerViewModel.playQueue(
-                                    activeSongs,
-                                    index
-                                )
-                            }
+                                if (playerViewModel.currentSong.value?.id == song.id) {
+                                    onNavigateToPlayer()
+                                } else {
+                                    playerViewModel.playQueue(
+                                        activeSongs,
+                                        index
+                                    )
+                                }
+                            },
+                            onAddToQueueClick = { playerViewModel.addToQueue(song) }
                         )
                     }
                 }

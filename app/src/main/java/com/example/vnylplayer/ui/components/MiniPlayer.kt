@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,13 +26,16 @@ fun MiniPlayer(
     artist: String,
     artworkUri: String?,
     isPlaying: Boolean,
+    progressRatio: Float,
     onPlayPauseClick: () -> Unit,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit,
     onPlayerClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
 
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             // Ambient shadow using deep drop-shadow settings softened (32.dp)
@@ -51,9 +56,14 @@ fun MiniPlayer(
                 )
             )
             .clickable { onPlayerClick() }
-            .padding(12.dp), // Snug padding for elegance
-        verticalAlignment = Alignment.CenterVertically
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+                .padding(bottom = 2.dp), // Snug padding for elegance escaping edge bar
+            verticalAlignment = Alignment.CenterVertically
+        ) {
         // Integrate Global CD Graphic system
         com.example.vnylplayer.ui.components.CdArtwork(
             size = 48.dp,
@@ -64,8 +74,12 @@ fun MiniPlayer(
         Spacer(modifier = Modifier.width(16.dp))
         
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground)
-            Text(artist, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
+            Text(title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground, maxLines = 1)
+            Text(artist, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, maxLines = 1)
+        }
+        
+        IconButton(onClick = onPreviousClick) {
+            Icon(Icons.Default.SkipPrevious, contentDescription = "Previous", tint = MaterialTheme.colorScheme.onBackground)
         }
         
         IconButton(onClick = onPlayPauseClick) {
@@ -85,5 +99,19 @@ fun MiniPlayer(
                     .padding(8.dp)
             )
         }
+        
+        IconButton(onClick = onNextClick) {
+            Icon(Icons.Default.SkipNext, contentDescription = "Next", tint = MaterialTheme.colorScheme.onBackground)
+        }
     }
-}
+    
+    // Explicit Tactile Edge Tracker naturally synchronized globally!
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(if (progressRatio > 0f) progressRatio else 0.001f) // Prevent 0-width collapse
+            .height(3.dp) // Thicker presence structurally
+            .align(Alignment.BottomStart)
+            // Glowing transparent crimson flush with the layout bounds organically!
+            .background(Color(0xFFE63946)) 
+    )
+}}

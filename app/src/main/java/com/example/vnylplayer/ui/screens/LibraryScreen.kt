@@ -28,7 +28,12 @@ import com.example.vnylplayer.ui.components.SongRow
 import com.example.vnylplayer.ui.components.AddToPlaylistDialog
 
 @Composable
-fun LibraryScreen(playerViewModel: SharedPlayerViewModel, playlistViewModel: PlaylistViewModel, onPlaylistClick: (Long) -> Unit) {
+fun LibraryScreen(
+    playerViewModel: SharedPlayerViewModel, 
+    playlistViewModel: PlaylistViewModel, 
+    onPlaylistClick: (Long) -> Unit,
+    onNavigateToPlayer: () -> Unit = {}
+) {
     val allSongs by playerViewModel.songs.collectAsState()
     val albums by playerViewModel.albums.collectAsState()
     val artists by playerViewModel.artists.collectAsState()
@@ -50,7 +55,7 @@ fun LibraryScreen(playerViewModel: SharedPlayerViewModel, playlistViewModel: Pla
             .background(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF131518), 
+                        Color(0xFF050505), 
                         MaterialTheme.colorScheme.background 
                     ),
                     radius = 2000f
@@ -120,9 +125,16 @@ fun LibraryScreen(playerViewModel: SharedPlayerViewModel, playlistViewModel: Pla
                             artist = song.artist,
                             duration = formatMs(song.durationMs),
                             artworkUri = song.artworkUri,
-                            showAddButton = false, // Defaults to purely play bounds natively until an explicit Select mode renders!
-                            onClick = { playerViewModel.playQueue(allSongs, allSongs.indexOf(song)) },
-                            onAddClick = { songToAdd = song }
+                            showAddButton = false,
+                            onClick = { 
+                                if (playerViewModel.currentSong.value?.id == song.id) {
+                                    onNavigateToPlayer()
+                                } else {
+                                    playerViewModel.playQueue(allSongs, allSongs.indexOf(song)) 
+                                }
+                            },
+                            onAddClick = { songToAdd = song },
+                            onAddToQueueClick = { playerViewModel.addToQueue(song) }
                         )
                     }
                 }
@@ -164,7 +176,8 @@ private fun PlaylistCard(playlistId: Long, title: String, playlistViewModel: Pla
         com.example.vnylplayer.ui.components.CdArtwork(
             size = 140.dp,
             isPlaying = false,
-            artworkUri = null // Room entities explicitly don't hold art directly unless bound natively.
+            artworkUri = null, // Room entities explicitly don't hold art directly unless bound natively.
+            isPlaylist = true
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground, maxLines = 1)

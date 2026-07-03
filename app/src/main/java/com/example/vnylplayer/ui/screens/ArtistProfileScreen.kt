@@ -20,7 +20,8 @@ import com.example.vnylplayer.ui.components.SongRow
 @Composable
 fun ArtistProfileScreen(
     artistName: String,
-    playerViewModel: SharedPlayerViewModel
+    playerViewModel: SharedPlayerViewModel,
+    onNavigateToPlayer: () -> Unit = {}
 ) {
     val librarySource by playerViewModel.songs.collectAsState()
 
@@ -42,7 +43,7 @@ fun ArtistProfileScreen(
             .background(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF131518),
+                        Color(0xFF050505),
                         MaterialTheme.colorScheme.background
                     ),
                     radius = 2000f
@@ -101,11 +102,16 @@ fun ArtistProfileScreen(
                             showAddButton = false,
                             showRemoveButton = false, // Strictly not a playlist, tracks can't be "removed" from a static artist
                             onClick = {
-                                playerViewModel.playQueue(
-                                    artistSongs,
-                                    index
-                                )
-                            }
+                                if (playerViewModel.currentSong.value?.id == song.id) {
+                                    onNavigateToPlayer()
+                                } else {
+                                    playerViewModel.playQueue(
+                                        artistSongs,
+                                        index
+                                    )
+                                }
+                            },
+                            onAddToQueueClick = { playerViewModel.addToQueue(song) }
                         )
                     }
                 }

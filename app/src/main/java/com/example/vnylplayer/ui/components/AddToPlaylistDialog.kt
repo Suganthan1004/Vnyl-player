@@ -41,6 +41,6 @@ fun AddToPlaylistDialog(
             }
         },
         shape = RoundedCornerShape(24.dp),
-        containerColor = Color(0xFF131316)
+        containerColor = Color(0xFF000000)
     )
 }
