@@ -69,7 +69,7 @@ fun MainScaffold(playerViewModel: SharedPlayerViewModel) {
             ) {
                 // LEFT: Seamless Text Navigation (Home | Library)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     NavHeaderItem("HOME", currentRoute == Route.Home.route) { navController.navigate(Route.Home.route) }
                     NavHeaderItem("LIBRARY", currentRoute == Route.Library.route) { navController.navigate(Route.Library.route) }
@@ -125,15 +125,21 @@ fun MainScaffold(playerViewModel: SharedPlayerViewModel) {
 
 @Composable
 fun NavHeaderItem(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelMedium,
-        color = if (isSelected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
-        letterSpacing = 4.sp,
-        modifier = Modifier.clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null, 
-            onClick = onClick
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null, 
+                onClick = onClick
+            )
+            .padding(horizontal = 8.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (isSelected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+            letterSpacing = 4.sp
         )
-    )
+    }
 }

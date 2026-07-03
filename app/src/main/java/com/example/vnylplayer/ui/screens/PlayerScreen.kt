@@ -117,13 +117,17 @@ fun PlayerScreen(
                 Text(
                     text = if (hasSong) currentSong!!.title else "No Song Playing",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
 
                 Text(
                     text = if (hasSong) currentSong!!.artist else "Start a track to continue",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.secondary,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
 

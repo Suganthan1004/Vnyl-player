@@ -53,14 +53,21 @@ class SharedPlayerViewModel(application: Application) : AndroidViewModel(applica
 
     init {
         initializeController()
+        loadLibrary() // Proactively fetch persistent Room data eliminating empty state on relaunch
         
-        // Asynchronous UI Progress Ticker (Saves extreme battery compared to raw listener loops)
+        // Asynchronous UI Progress Ticker safely updating both position and derived duration limits natively
         viewModelScope.launch {
             while(true) {
-                if (_isPlaying.value) {
-                    _progress.value = player?.currentPosition ?: 0L
+                val p = player
+                if (_isPlaying.value || p?.playbackState == androidx.media3.common.Player.STATE_READY) {
+                    _progress.value = p?.currentPosition?.coerceAtLeast(0L) ?: 0L
+                    
+                    val exoDuration = p?.duration ?: 0L
+                    if (exoDuration > 0L && _currentSong.value?.durationMs != exoDuration) {
+                        _currentSong.value = _currentSong.value?.copy(durationMs = exoDuration)
+                    }
                 }
-                delay(1000L) // UI refresh mapped to a relaxed 1-second pulse for cinematic smoothness without drain
+                delay(500L) // UI refresh mapped to a tight 500ms pulse for smooth visual sliders
             }
         }
     }

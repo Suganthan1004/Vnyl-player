@@ -46,8 +46,8 @@ fun CdArtwork(
             .rotate(if (isPlaying) rotation else 0f),
         contentAlignment = Alignment.Center
     ) {
-        // Outer CD Disc (Metallic Grooves)
-        Canvas(modifier = Modifier.matchParentSize()) {
+        // Layer 1: Outer CD Disc (Metallic Grooves)
+        Canvas(modifier = Modifier.size(size)) { // Explicitly mapping absolute strict geometric bounds preventing canvas stretching anomalies
             val center = Offset(size.toPx() / 2, size.toPx() / 2)
             val radius = size.toPx() / 2
 
@@ -81,7 +81,7 @@ fun CdArtwork(
             }
         }
 
-            // Inner Artwork Label Component
+        // Layer 2: Center circular cutout
         Box(
             modifier = Modifier
                 .size(size * 0.45f) // The CD label takes 45% of the radius
@@ -90,26 +90,26 @@ fun CdArtwork(
                     brush = Brush.radialGradient(
                         colors = listOf(Color(0xFF231F20), Color(0xFF131114))
                     )
-                ) // Placeholder fallback for missing artwork
+                ), // Placeholder fallback for missing artwork
+            contentAlignment = Alignment.Center
         ) {
             
-            // Raw Android file Image binding via Coil
+            // Layer 3: Album artwork clipped INSIDE the center circle
             if (artworkUri != null) {
                 AsyncImage(
                     model = artworkUri,
                     contentDescription = "Album Artwork Layer",
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.matchParentSize().clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }
 
-            // CD center spindle hole punch
+            // Layer 4: CD center spindle hole punch
             Box(
                 modifier = Modifier
                     .size(size * 0.1f)
                     .clip(CircleShape)
                     .background(Color(0xFF0F0F11)) // Punches out to background color conceptually
-                    .align(Alignment.Center)
             )
         }
     }

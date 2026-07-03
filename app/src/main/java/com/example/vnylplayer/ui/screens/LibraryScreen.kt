@@ -94,7 +94,13 @@ fun LibraryScreen(playerViewModel: SharedPlayerViewModel, playlistViewModel: Pla
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     playlists.forEach { playlist ->
-                        PlaylistCard(title = playlist.name, count = 0, onClick = { onPlaylistClick(playlist.playlistId) })
+                        PlaylistCard(
+                            playlistId = playlist.playlistId,
+                            title = playlist.name, 
+                            playlistViewModel = playlistViewModel,
+                            allSongs = allSongs,
+                            onClick = { onPlaylistClick(playlist.playlistId) }
+                        )
                     }
                 }
             }
@@ -147,7 +153,10 @@ fun LibraryScreen(playerViewModel: SharedPlayerViewModel, playlistViewModel: Pla
 }
 
 @Composable
-private fun PlaylistCard(title: String, count: Int, onClick: () -> Unit) {
+private fun PlaylistCard(playlistId: Long, title: String, playlistViewModel: PlaylistViewModel, allSongs: List<Song>, onClick: () -> Unit) {
+    val assignedSongs by playlistViewModel.getSongsForPlaylist(playlistId).collectAsState(initial = emptyList())
+    val actualCount = allSongs.count { it.id in assignedSongs }
+    
     Column(
         horizontalAlignment = androidx.compose.ui.Alignment.Start, 
         modifier = Modifier.clickable(onClick = onClick).width(140.dp)
@@ -159,6 +168,6 @@ private fun PlaylistCard(title: String, count: Int, onClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground, maxLines = 1)
-        Text(text = "$count tracks", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, maxLines = 1)
+        Text(text = "$actualCount tracks", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, maxLines = 1)
     }
 }

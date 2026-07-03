@@ -3,45 +3,88 @@ package com.example.vnylplayer.player
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vnylplayer.data.Song
 import com.example.vnylplayer.data.local.VnylDatabase
 import com.example.vnylplayer.data.repository.PlaylistRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(application: Application) : AndroidViewModel(application) {
-    private val playlistDao = VnylDatabase.getDatabase(application).playlistDao()
-    private val repository = PlaylistRepository(playlistDao)
 
-    val allPlaylists = repository.allPlaylists.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    private val playlistDao =
+        VnylDatabase.getDatabase(application).playlistDao()
+
+    private val repository =
+        PlaylistRepository(playlistDao)
+
+    val allPlaylists =
+        repository.allPlaylists.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun createPlaylist(name: String) {
+
         viewModelScope.launch {
             repository.createPlaylist(name)
         }
     }
 
     fun deletePlaylist(playlistId: Long) {
+
         viewModelScope.launch {
             repository.deletePlaylist(playlistId)
         }
     }
 
-    fun addSongToPlaylist(playlistId: Long, songId: String) {
+    fun addSongToPlaylist(
+        playlistId: Long,
+        songId: String
+    ) {
+
         viewModelScope.launch {
-            repository.addSongToPlaylist(playlistId, songId)
+            repository.addSongToPlaylist(
+                playlistId,
+                songId
+            )
         }
     }
 
-    fun removeSongFromPlaylist(playlistId: Long, songId: String) {
+    fun removeSongFromPlaylist(
+        playlistId: Long,
+        songId: String
+    ) {
+
         viewModelScope.launch {
-            repository.removeSongFromPlaylist(playlistId, songId)
+            repository.removeSongFromPlaylist(
+                playlistId,
+                songId
+            )
         }
     }
 
-    fun getSongsForPlaylist(playlistId: Long) = repository.getSongsForPlaylist(playlistId)
+    fun getSongsForPlaylist(
+        playlistId: Long
+    ) = repository.getSongsForPlaylist(playlistId)
+
+    fun getAvailableSongsForPlaylist(
+        playlistId: Long,
+        allSongs: List<Song>
+    ): Flow<List<Song>> {
+
+        return repository
+            .getSongsForPlaylist(playlistId)
+            .map { assignedIds ->
+
+                allSongs.filter { song ->
+                    song.id !in assignedIds
+                }
+            }
+    }
+
+    fun getPlaylistById(playlistId: Long) = repository.getPlaylistById(playlistId)
 }

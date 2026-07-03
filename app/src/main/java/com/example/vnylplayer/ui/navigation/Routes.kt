@@ -7,4 +7,5 @@ sealed class Route(val route: String) {
     object Player : Route("player")
     object Playlist : Route("playlist")
     object Profile : Route("profile")
+    object Artist : Route("artist")
 }

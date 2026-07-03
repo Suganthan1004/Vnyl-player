@@ -32,4 +32,8 @@ class PlaylistRepository(private val playlistDao: PlaylistDao) {
     fun getSongsForPlaylist(playlistId: Long): Flow<List<String>> {
         return playlistDao.getSongsForPlaylist(playlistId)
     }
+
+    fun getPlaylistById(playlistId: Long): Flow<PlaylistEntity?> {
+        return playlistDao.getPlaylistById(playlistId)
+    }
 }

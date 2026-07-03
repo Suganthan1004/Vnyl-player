@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,8 +20,10 @@ fun SongRow(
     duration: String,
     artworkUri: String?,
     showAddButton: Boolean = false,
+    showRemoveButton: Boolean = false,
     onClick: () -> Unit,
-    onAddClick: () -> Unit = {}
+    onAddClick: () -> Unit = {},
+    onRemoveClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -41,6 +44,11 @@ fun SongRow(
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(onClick = onAddClick, modifier = Modifier.size(32.dp)) {
                 Icon(Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.primary)
+            }
+        } else if (showRemoveButton) {
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(onClick = onRemoveClick, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Default.Close, contentDescription = "Remove", tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f))
             }
         }
     }

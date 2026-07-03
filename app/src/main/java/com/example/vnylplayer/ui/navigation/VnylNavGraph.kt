@@ -13,6 +13,7 @@ import com.example.vnylplayer.ui.screens.PlayerScreen
 import com.example.vnylplayer.ui.screens.PlaylistDetailScreen
 import com.example.vnylplayer.ui.screens.SearchScreen
 import com.example.vnylplayer.ui.screens.HomeScreen
+import com.example.vnylplayer.ui.screens.ArtistProfileScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vnylplayer.player.PlaylistViewModel
 import com.example.vnylplayer.player.SharedPlayerViewModel
@@ -40,7 +41,10 @@ fun VnylNavGraph(
                 playlistViewModel = playlistViewModel,
                 onPlaylistClick = { id -> navController.navigate("playlist/$id") },
                 onSeeAllSongsClick = { navController.navigate(Route.Library.route) },
-                onArtistClick = { navController.navigate("playlist/1") } // Placeholder for Artist screen
+                onArtistClick = { artistName -> 
+                    val encoded = java.net.URLEncoder.encode(artistName, "UTF-8")
+                    navController.navigate("artist/$encoded") 
+                }
             )
         }
         composable(Route.Library.route) { 
@@ -66,6 +70,11 @@ fun VnylNavGraph(
                 playerViewModel = playerViewModel, 
                 onNavigateBack = { navController.popBackStack() }
             ) 
+        }
+        composable("artist/{artistName}") { backStackEntry ->
+            val rawName = backStackEntry.arguments?.getString("artistName") ?: "Unknown Artist"
+            val decodedName = java.net.URLDecoder.decode(rawName, "UTF-8")
+            ArtistProfileScreen(decodedName, playerViewModel)
         }
     }
 }

@@ -35,7 +35,7 @@ fun HomeScreen(
     playlistViewModel: PlaylistViewModel,
     onPlaylistClick: (Long) -> Unit = {},
     onSeeAllSongsClick: () -> Unit = {},
-    onArtistClick: () -> Unit = {}
+    onArtistClick: (String) -> Unit = {}
 ) {
     val recentlyPlayed by playerViewModel.recentlyPlayed.collectAsState()
     val artists by playerViewModel.artists.collectAsState()
@@ -92,11 +92,13 @@ fun HomeScreen(
                     AlbumCard(title = "Night Drive", artist = "Retro Syntax", null, onClick = { onPlaylistClick(1L) })
                     AlbumCard(title = "Lunar Phase", artist = "OLED Heights", null, onClick = { onPlaylistClick(2L) })
                 } else {
+                    val allLibrarySongs by playerViewModel.songs.collectAsState()
                     playlists.forEach { playlist ->
-                        AlbumCard(
+                        HomePlaylistCard(
+                            playlistId = playlist.playlistId,
                             title = playlist.name,
-                            artist = "Persistent Set",
-                            artworkUri = null,
+                            playlistViewModel = playlistViewModel,
+                            allSongs = allLibrarySongs,
                             onClick = { onPlaylistClick(playlist.playlistId) }
                         )
                     }
@@ -139,11 +141,11 @@ fun HomeScreen(
             ) {
                 val topArtists = artists.take(5)
                 if (topArtists.isEmpty()) {
-                    ArtistCard("Retro Syntax", onClick = onArtistClick)
-                    ArtistCard("Cinematic Audio", onClick = onArtistClick)
+                    ArtistCard("Retro Syntax", onClick = { onArtistClick("Retro Syntax") })
+                    ArtistCard("Cinematic Audio", onClick = { onArtistClick("Cinematic Audio") })
                 } else {
                     topArtists.forEach { artistName ->
-                        ArtistCard(name = artistName, onClick = onArtistClick)
+                        ArtistCard(name = artistName, onClick = { onArtistClick(artistName) })
                     }
                 }
             }
@@ -214,6 +216,26 @@ private fun AlbumCard(title: String, artist: String, artworkUri: String?, onClic
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground, maxLines = 1)
         Text(text = artist, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, maxLines = 1)
+    }
+}
+
+@Composable
+private fun HomePlaylistCard(playlistId: Long, title: String, playlistViewModel: PlaylistViewModel, allSongs: List<Song>, onClick: () -> Unit) {
+    val assignedSongs by playlistViewModel.getSongsForPlaylist(playlistId).collectAsState(initial = emptyList())
+    val actualCount = allSongs.count { it.id in assignedSongs }
+    
+    Column(
+        horizontalAlignment = Alignment.Start, 
+        modifier = Modifier.clickable(onClick = onClick).width(140.dp)
+    ) {
+        com.example.vnylplayer.ui.components.CdArtwork(
+            size = 140.dp,
+            isPlaying = false,
+            artworkUri = null
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(text = title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground, maxLines = 1)
+        Text(text = "$actualCount Tracks", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, maxLines = 1)
     }
 }
 
